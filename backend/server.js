@@ -24,7 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/assets", assetRoutes);
 
 app.get("/", (req,res)=>{
-  res.send("API working")
+  res.send("API working...")
 })
 
 mongoose
