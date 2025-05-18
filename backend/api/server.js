@@ -26,11 +26,19 @@ app.get("/", (req, res) => {
   res.send("API working...");
 });
 
-  
-mongoose
-  .connect(`${process.env.MONGO_URL}/DocBox`)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+
+let isConnected = false;
+
+async function connectToDatabase() {
+  if (isConnected) return;
+  try {
+    await mongoose.connect(`${process.env.MONGO_URL}/DocBox`);
+    isConnected = true;
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+  }
+}
 
   
 if (process.env.NODE_ENV !== "production") {
@@ -40,4 +48,7 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-module.exports.handler = serverless(app);
+module.exports.handler = async (event, context) => {
+  await connectToDatabase();
+  return serverless(app)(event, context);
+};
